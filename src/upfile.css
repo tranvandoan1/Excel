@@ -1,0 +1,137 @@
+.up-file > h3 {
+  border-bottom: 1px solid rgb(214, 214, 214);
+  padding: 10px 0;
+}
+
+.spanUploadName {
+  margin: 0 10px;
+}
+
+#up-file {
+  display: none;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.header > label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.buttonUpfile {
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  margin-right: 5px;
+  align-items: center;
+  background-color: red;
+}
+
+.header > label > .icon {
+  margin-right: 5px;
+}
+
+.button_save > button:nth-child(1),
+.button_save > button:nth-child(2) {
+  border: 1px solid rgb(214, 214, 214);
+  background-color: #fff;
+  padding: 5px 10px;
+}
+
+.button_save > button:nth-child(1) {
+  margin-right: 10px;
+}
+
+table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  border: 1px solid #eeeeee;
+  margin-top: 20px;
+}
+
+table th,
+table th,
+table th {
+  padding: 10px 20px;
+  font-weight: 500;
+  text-align: center;
+  font-size: 0.9rem;
+  border: 1px solid #eeeeee;
+}
+
+table tbody td,
+table tbody td,
+table tbody td {
+  padding: 1rem 0.5rem;
+  border: 1px solid #eeeeee;
+}
+
+@media (max-width: 538px) {
+  .header {
+    display: block;
+  }
+
+  .button {
+    margin-top: 10px;
+  }
+}
+
+.status {
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  animation: none;
+}
+
+.susse {
+  color: rgb(21, 255, 0);
+}
+
+.dvc {
+  color: rgb(96, 118, 255);
+}
+
+.cdh {
+  color: rgb(255, 142, 42);
+}
+
+.dg {
+  color: rgb(96, 118, 255);
+  animation: blink 1.5s linear infinite;
+}
+
+.hoan {
+  color: red;
+}
+
+@keyframes blink {
+  0% {
+    color: rgb(96, 118, 255);
+    transition: 1s ease-in;
+    box-shadow: 0 0 5px salmon;
+  }
+
+  50% {
+    color: rgb(21, 255, 0);
+    box-shadow: 0 0 5px salmon;
+    transition: 1s ease-in;
+  }
+
+  70% {
+    color: rgb(21, 255, 0);
+    transition: 1s ease-in;
+  }
+
+  100% {
+    transition: 1s ease-in;
+    color: rgb(96, 118, 255);
+  }
+}
