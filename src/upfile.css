@@ -12,10 +12,7 @@
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  margin: 0 auto;
+    
 }
 
 .header > label {
@@ -24,30 +21,11 @@
   align-items: center;
 }
 
-.buttonUpfile {
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 5px 10px;
-  cursor: pointer;
-  display: flex;
-  margin-right: 5px;
-  align-items: center;
-  background-color: red;
-}
 
 .header > label > .icon {
   margin-right: 5px;
 }
 
-.button_save > button:nth-child(1),
-.button_save > button:nth-child(2) {
-  border: 1px solid rgb(214, 214, 214);
-  background-color: #fff;
-  padding: 5px 10px;
-}
-
-.button_save > button:nth-child(1) {
-  margin-right: 10px;
-}
 
 table {
   width: 100%;

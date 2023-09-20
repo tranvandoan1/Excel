@@ -1,5 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, Modal, Radio, Table, message } from "antd";
+import { Button, Input, Modal, Radio, Table, message } from "antd";
 import React, { useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -203,7 +203,8 @@ const App = () => {
 
   return (
     <div className="header">
-      <Button style={{ width: "95%" }}>
+      <h1 style={{textAlign:'center'}}>Danh sách khách hàng</h1>
+      <Button>
         <label htmlFor="up-file">
           {!nameFile && dataNew.length === 0 && (
             <div className="buttonUpfile">
@@ -216,7 +217,7 @@ const App = () => {
           )}
         </label>
       </Button>
-      <input type="file" onChange={(e) => importData(e)} id="up-file" />
+      <Input type="file" onChange={(e) => importData(e)} id="up-file" />
       {dataNew.length > 0 && (
         <div className="mt-2 d-flex align-items-center justify-content-between">
           <Button
