@@ -1,7 +1,7 @@
 import axios from "axios"
 export const axiosClient = axios.create({
-    // baseURL: "https://excel-backend-uuhw.onrender.com/api",
-    baseURL: "http://localhost:1111/api",
+    baseURL: "https://excel-backend-uuhw.onrender.com/api",
+    // baseURL: "http://localhost:1111/api",
     headers: {
         'Content-Type': 'application/json',
     }
@@ -9,8 +9,8 @@ export const axiosClient = axios.create({
 
 // dành cho form data
 const axiosClientMultipart = axios.create({
-    // baseURL: 'https://excel-backend-uuhw.onrender.com/api',
-    baseURL: "http://localhost:1111/api",
+    baseURL: 'https://excel-backend-uuhw.onrender.com/api',
+    // baseURL: "http://localhost:1111/api",
 });
 
 axiosClientMultipart.interceptors.request.use((req) => {
