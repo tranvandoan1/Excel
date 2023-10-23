@@ -6,7 +6,7 @@ import {
     UploadOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Checkbox, Col, Input, Modal, Row, message } from "antd";
+import { Avatar, Button, Checkbox, Col, Image, Input, Modal, Row, message } from "antd";
 import { useDropzone } from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import { getImage, upload_image } from "./features/dataMonthSlice";
@@ -43,6 +43,7 @@ const UploadImage = () => {
         console.log(`checked = ${e.target.checked}`);
     };
     const dataImages = useSelector((data) => data.dataMonth.valueImage);
+    console.log(dataImages?.data, 'dataImages?.data')
     useEffect(() => {
         dispatch(getImage());
     }, []);
@@ -61,6 +62,7 @@ const UploadImage = () => {
             formData.append('files', images[i].image)
         }
         await dispatch(upload_image(formData))
+        setImages([])
         setIsModalOpen(false);
         setLoanding(false)
     };
@@ -68,10 +70,20 @@ const UploadImage = () => {
     const handleCancel = () => {
         setIsModalOpen(false);
     };
-
+    const handleContextMenu = (event) => {
+        event.preventDefault();
+    
+        const imageUrl = '/path/to/image.jpg';
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'image.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
     return (
         <div className="image-box">
-                 {
+            {
                 loading == true &&
                 <Loading />
             }
@@ -143,19 +155,41 @@ const UploadImage = () => {
                 </div>
             </Row> */}
 
-            {dataImages?.data?.length <= 0 ? (
+            {/* {dataImages?.data?.length <= 0 ? (
                 <span>Chưa có ảnh nào</span>
-            ) : (
-                <Row gutter={16}>
-                    {dataImages?.data?.map((image, index) => (
-                        <Col xs={12} sm={12} md={12} lg={4} xl={4} key={index}>
-                            <div className="image">
-                                <img src={URL.createObjectURL(image.image)} alt={image.image.name} />
-                            </div>
-                        </Col>
-                    ))}
-                </Row>
-            )}
+            ) : ( */}
+            <div style={{ height: '100vh' }}>
+                {dataImages?.data?.map((image, index) => {
+                    console.log(JSON.parse(image?.photo).length, 'êwfds')
+                    return (
+                        <Row gutter={16}>
+
+                            {
+                                JSON.parse(image?.photo).map((item, index) => {
+                                    console.log(item.photo, 'item.photo')
+                                    return (
+                                        <Col xs={12} sm={12} md={12} lg={4} xl={4} key={index}>
+                                            {/* onContextMenu={handleContextMenu}  */}
+                                            <div className="image" >
+                                                <Image
+                                               
+                                                    width={150}
+
+                                                    src={item.photo}
+                                                />
+                                            </div>
+                                        </Col>
+
+                                    )
+                                })
+                            }
+                        </Row>
+
+                    )
+                })}
+            </div>
+
+            {/* )} */}
 
 
             <Modal title="Check lại ảnh muốn upload" open={isModalOpen} onOk={handleOk} onCancel={handleCancel} okText='Đồng ý' cancelText='Hủy'>

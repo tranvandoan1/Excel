@@ -43,7 +43,14 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+}
+
+.image .image-cove {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .close {
@@ -58,14 +65,17 @@
     border-radius: 100%;
     padding: 5px;
 }
-.show-image{
+
+.show-image {
     height: 100vh;
     overflow: auto;
 }
-.show-image::-webkit-scrollbar{
+
+.show-image::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
+
 @media screen and (max-width: 480px) {
     .upload-button {
         display: block !important;
