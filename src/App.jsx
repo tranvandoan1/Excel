@@ -1,5 +1,14 @@
-import { DeleteOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Input, Modal, Radio, Select, Table, message } from "antd";
+import { DeleteOutlined, EyeOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Input,
+  Modal,
+  Radio,
+  Select,
+  Switch,
+  Table,
+  message,
+} from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,9 +38,13 @@ const dataMonth = [
 ];
 
 const App = () => {
-  const datee = moment().date();
+  const date = moment().date();
   const month = moment().month() + 1;
   const year = moment().year();
+
+  const milliseconds = moment().milliseconds();
+  const minutes = moment().minutes();
+  const hours = moment().hours();
 
   const dispatch = useDispatch();
   const [selectData, setSelectData] = useState();
@@ -41,16 +54,32 @@ const App = () => {
     data: undefined,
   });
   const datas = useSelector((data) => data.dataMonth.value);
+  const [update, setUpload] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataNew, setDataNew] = useState([]);
   const [nameFile, setNameFile] = useState("");
   const [valueSave, setValueSave] = useState();
+  const [valueUploadPriveCode, setValueUploadPriveCode] = useState();
   const [value, setValue] = useState();
   const [selectMonth, setSelectMonth] = useState(month);
+  const [uploadData, setUploadData] = useState({
+    status: false,
+    data: undefined,
+  });
   const [comfimDelete, setComfimDelete] = useState({
     status: false,
     data: undefined,
   });
+  const [uploadPriveCode, setUploadPriveCode] = useState({
+    status: false,
+    data: undefined,
+  });
+  const [valueNodeCheck, setValueNodeCheck] = useState();
+  const [nodeCheck, setNodeCheck] = useState({
+    status: false,
+    data: undefined,
+  });
+  console.log(nodeCheck?.data?.nodeCheck, "nodeCheck?.data?.nodeCheck?");
   const [comfimSave, setComfimSave] = useState(false);
   let sum = 0;
   for (let i = 0; i < dataNew?.length; i++) {
@@ -70,12 +99,12 @@ const App = () => {
         dataMonthSelect == undefined ? [] : JSON.parse(dataMonthSelect?.data)
       );
     }
-  }, [datas, selectMonth]);
-
+  }, [datas, selectMonth, nodeCheck]);
   const refInput = useRef();
 
+  // nhập execel
   const importData = (e) => {
-    console.log(e, "1weds");
+    setUpload(true);
     const file = e.target.files[0];
 
     setNameFile(file.name);
@@ -133,23 +162,50 @@ const App = () => {
 
   // lưu
   const submitSave = async () => {
-    await dispatch(addDataMonth({ data: dataNew, name: valueSave }));
-    setDataNew([]);
-    setNameFile();
-    setComfimSave(false);
-    setValueSave();
+    const dataFind = datas?.data?.find((item) => item._id == uploadData?.data);
+    const newData = [...dataNew, ...JSON.parse(dataFind.data)];
+    if (uploadData?.status == true) {
+      setLoading(true);
+      await dispatch(uploadmonthgori({ _id: uploadData?.data, data: newData }));
+      setLoading(false);
+      setUpload(false);
+      setUploadData(false);
+      setUploadData({ status: false, data: undefined });
+    } else {
+      setLoading(true);
+      await dispatch(addDataMonth({ data: dataNew, name: valueSave }));
+      setValueSave();
+      setUpload(false);
+    }
 
+    setComfimSave(false);
+    setNameFile();
     refInput.current.value = "";
+  };
+
+  // lưu thay đổi tiền cọc
+  const submitSaveValueUploadPriveCode = async () => {
+    setLoading(true);
+    for (let i = 0; i < dataNew?.length; i++) {
+      if (uploadPriveCode.data.key == dataNew[i].key) {
+        dataNew[i].has_paid = valueUploadPriveCode;
+      }
+    }
+    await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
+    setLoading(false);
+    setUploadPriveCode({ status: false, data: undefined });
+    setValueUploadPriveCode();
   };
 
   const submitCole = () => {
     setDataNew([]);
+    setUpload(false);
     setNameFile();
     refInput.current.value = "";
   };
 
   // chọn trạng thái muốn cập nhật
-  const handleOk = async () => {
+  const uploadStatus = async () => {
     setLoading(true);
     for (let i = 0; i < dataNew?.length; i++) {
       if (comfimUploadStauts.data.key == dataNew[i].key) {
@@ -159,6 +215,7 @@ const App = () => {
     await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
     setLoading(false);
     setComfimUploadStauts({ status: false, data: undefined });
+    setValueSave;
   };
   const handleCancel = () => {
     setComfimUploadStauts({ status: false, data: undefined });
@@ -177,7 +234,7 @@ const App = () => {
       title: "Tên khách hàng",
       dataIndex: "name",
       key: "name",
-      render: (text) => <a>{text}</a>,
+      render: (name) => <a>{name}</a>,
       width: 200,
     },
     {
@@ -188,14 +245,14 @@ const App = () => {
     {
       title: "Ghi chú hàng hóa",
       dataIndex: "commodity_notes",
-      key: "address",
+      key: "commodity_notes",
       width: 100,
     },
     {
       title: "Khách cần trả",
       dataIndex: "needs_pay",
-      key: "address",
-      render: (needs_pay) => (
+      key: "needs_pay",
+      render: (needs_pay, data) => (
         <a style={{ color: "red", fontWeight: "600" }}>
           {needs_pay.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         </a>
@@ -204,9 +261,12 @@ const App = () => {
     {
       title: "Khách đã trả",
       dataIndex: "has_paid",
-      key: "address",
-      render: (has_paid) => (
-        <a style={{ color: "red", fontWeight: "600" }}>
+      key: "has_paid",
+      render: (has_paid, data) => (
+        <a
+          style={{ color: "red", fontWeight: "600", cursor: "pointer" }}
+          onClick={() => setUploadPriveCode({ status: true, data: data })}
+        >
           {has_paid.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         </a>
       ),
@@ -214,7 +274,7 @@ const App = () => {
     {
       title: "Thời gian",
       dataIndex: "time",
-      key: "address",
+      key: "time",
     },
     {
       title: "Địa chỉ (Khách hàng)",
@@ -225,7 +285,21 @@ const App = () => {
     {
       title: "Điện thoại",
       dataIndex: "phone",
-      key: "address",
+      key: "phone",
+    },
+    {
+      title: "Ghi chú check",
+      dataIndex: "nodeCheck",
+      key: "nodeCheck",
+      width: 200,
+      render: (nodeCheck, data) => (
+        <span
+          style={{ color: "red", fontWeight: "600", cursor: "pointer" }}
+          onClick={() => setNodeCheck({ status: true, data: data })}
+        >
+          <EyeOutlined />
+        </span>
+      ),
     },
     {
       title: "Trạng thái",
@@ -248,6 +322,8 @@ const App = () => {
             <span className="dg">Đang giao</span>
           ) : status == 3 ? (
             <span className="hoan">Hoàn</span>
+          ) : status == 5 ? (
+            <span className="hoan">Bỏ</span>
           ) : (
             <span className="susse">Thành công</span>
           )}
@@ -258,15 +334,55 @@ const App = () => {
   const handleChange = (value) => {
     setSelectMonth(value);
   };
+  const handleChange1 = (value) => {
+    setUploadData({ status: uploadData.status, data: value });
+  };
   // xóa danh sách
   const deleteMonth = async () => {
     setLoading(true);
-    await dispatch(removemonthgori({ _id: comfimDelete?.data?._id }));
+    await dispatch(removemonthgori({ _id: comfimDelete?.data }));
     setLoading(false);
     setComfimDelete({ status: false, data: undefined });
   };
   const handleCancel1 = () => {
     setComfimDelete({ status: false, data: undefined });
+  };
+
+  const bo = [];
+  const hoan = [];
+  const tc = [];
+  dataNew?.map((item) => {
+    if (item.status == 5) {
+      bo?.push(item);
+    } else if (item.status == 4) {
+      tc?.push(item);
+    } else if (item.status == 3) {
+      hoan?.push(item);
+    }
+  });
+  let sumTc = 0;
+  for (let i = 0; i < tc?.length; i++) {
+    sumTc += +Math.ceil(tc[i].needs_pay * ((100 - 0) / 100));
+  }
+  const onChange1 = (checked) => {
+    setUploadData({ status: checked, data: uploadData?.data });
+  };
+  const submitSaveNodeCheck = async () => {
+    setLoading(true);
+    const newDataNode = {
+      _id: Math.random(),
+      value: valueNodeCheck,
+      time: `${year}-${month}-${date} ${hours}-${minutes}`,
+    };
+    for (let i = 0; i < dataNew.length; i++) {
+      if (dataNew[i].key == nodeCheck.data.key) {
+        dataNew[i].nodeCheck = [newDataNode];
+      }
+    }
+    await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
+    setNodeCheck({ status: false, data: undefined });
+    setValueNodeCheck();
+    setLoading(false);
   };
 
   return (
@@ -279,7 +395,16 @@ const App = () => {
           alignItems: "center",
         }}
       >
-        <h1>Danh sách khách hàng</h1>
+        <div>
+          <h1>Danh sách khách hàng</h1>
+          <div>Hoàn : {hoan?.length}</div>
+          <div>Bỏ : {bo?.length}</div>
+          <div>Thành công : {tc?.length}</div>
+          <div>
+            Tổng tiền thành công :{" "}
+            {sumTc?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
+          </div>
+        </div>
         <div
           style={{
             display: "flex",
@@ -305,7 +430,7 @@ const App = () => {
         <div>
           <Button style={{ cursor: "pointer" }}>
             <label htmlFor="up-file">
-              {!nameFile && dataNew.length === 0 && (
+              {update == false && (
                 <div className="buttonUpfile">
                   <UploadOutlined className="icon" /> Tải file excel
                 </div>
@@ -320,14 +445,13 @@ const App = () => {
             type="file"
             ref={refInput}
             onChange={(e) => {
-              console.log(e, "2e32edwfdvf32efwvfd");
               refInput.current.value = "";
               importData(e);
             }}
             id="up-file"
           />
         </div>
-        {dataNew.length > 0 && (
+        {update && (
           <div>
             <Button onClick={() => setComfimSave(true)} type="primary">
               Lưu
@@ -337,6 +461,14 @@ const App = () => {
             </Button>
           </div>
         )}
+        <Button
+          onClick={() =>
+            setComfimDelete({ status: true, data: selectData?._id })
+          }
+          style={{ marginLeft: 10 }}
+        >
+          Xóa
+        </Button>
       </div>
       <div>
         <Table
@@ -499,7 +631,7 @@ const App = () => {
       <Modal
         title={<span style={{ fontSize: 20 }}>Cập nhật trạng thái</span>}
         open={comfimUploadStauts.status}
-        onOk={handleOk}
+        onOk={uploadStatus}
         onCancel={handleCancel}
         cancelText="Đóng"
         okText="Thay đổi"
@@ -526,6 +658,9 @@ const App = () => {
           <Radio style={{ fontSize: 18 }} value={4}>
             Thành công
           </Radio>
+          <Radio style={{ fontSize: 18 }} value={5}>
+            Bỏ
+          </Radio>
         </Radio.Group>
       </Modal>
       <Modal
@@ -548,6 +683,93 @@ const App = () => {
           placeholder="Nhập tên danh sách muốn lưu"
           onChange={(e) => setValueSave(e.target.value)}
         />
+        <Select
+          defaultValue="lucy"
+          style={{ width: 120 }}
+          onChange={handleChange1}
+        >
+          {datas?.data?.map((item) => {
+            return (
+              <Select.Option
+                value={item._id}
+                style={{ textTransform: "capitalize" }}
+              >
+                {item.month}
+              </Select.Option>
+            );
+          })}
+        </Select>
+        <Switch defaultChecked={uploadData?.status} onChange={onChange1} />
+      </Modal>
+      <Modal
+        title="Nhập số tiền cọc !"
+        open={uploadPriveCode?.status}
+        onOk={() => submitSaveValueUploadPriveCode()}
+        onCancel={() => setUploadPriveCode({ status: false, data: undefined })}
+        okText="Lưu"
+        cancelText="Hủy"
+      >
+        <Input
+          placeholder="Nhập số tiền cọc"
+          defaultValue={uploadPriveCode?.data?.has_paid}
+          onChange={(e) => setValueUploadPriveCode(e.target.value)}
+        />
+      </Modal>
+      <Modal
+        title="Nhập ghi chú !"
+        open={nodeCheck?.status}
+        onOk={() => submitSaveNodeCheck()}
+        onCancel={() => setNodeCheck({ status: false, data: undefined })}
+        okText="Lưu"
+        cancelText="Hủy"
+      >
+        <Input
+          placeholder="Nhập ghi chú"
+          defaultValue={valueNodeCheck}
+          onChange={(e) => setValueNodeCheck(e.target.value)}
+        />
+        <div style={{ overflow: "auto", height: 400 }}>
+          {nodeCheck?.data?.nodeCheck == undefined ? (
+            <div></div>
+          ) : (
+            nodeCheck?.data?.nodeCheck
+              ?.slice()
+              ?.reverse()
+              ?.map((item) => {
+                return (
+                  <div>
+                    <hr />
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <div>
+                        <span
+                          style={{
+                            fontSize: 14,
+                            fontStyle: "italic",
+                            fontWeight: "500",
+                          }}
+                        >
+                          {item.time}
+                        </span>
+                        <div>{item.value}</div>
+                      </div>
+                      <div
+                        style={{ cursor: "pointer" }}
+                        onClick={() => console.log(item, "3ewfd")}
+                      >
+                        <DeleteOutlined />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+          )}
+        </div>
       </Modal>
     </div>
   );

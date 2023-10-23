@@ -24,3 +24,13 @@ export const uploadMonth = (data) => {
   const url = `/month-upload`;
   return axiosClient.post(url, data);
 };
+
+export const getAllImage = () => {
+  const url = `/getall-image`;
+  return axiosClient.get(url);
+}
+export const uploadImage = (data) => {
+  console.log(data,'data')
+  const url = `/upload-image`;
+  return axiosClientMultipart.post(url, data);
+};
