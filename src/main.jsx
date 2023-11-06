@@ -8,7 +8,7 @@ import { store } from './app/Store.js';
 import UploadImage from './UploadImage.jsx'
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
-        <UploadImage />
+        <App />
     </Provider>
 
 )

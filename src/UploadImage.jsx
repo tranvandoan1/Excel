@@ -19,7 +19,6 @@ const UploadImage = () => {
 
     const onDrop = (acceptedFiles) => {
         setLoanding(true)
-        console.log(acceptedFiles.length, '23rewf')
         const newData = [...images]
         acceptedFiles?.map(item => {
             newData.push({ _id: Math.random(), image: item })
@@ -58,7 +57,6 @@ const UploadImage = () => {
         setLoanding(true)
         const formData = new FormData()
         for (let i = 0; i < images.length; i++) {
-            console.log(images[i].image, ' images[i].image')
             formData.append('files', images[i].image)
         }
         await dispatch(upload_image(formData))
@@ -160,15 +158,13 @@ const UploadImage = () => {
             ) : ( */}
             <div style={{ height: '100vh' }}>
                 {dataImages?.data?.map((image, index) => {
-                    console.log(JSON.parse(image?.photo).length, 'êwfds')
                     return (
                         <Row gutter={16}>
 
                             {
                                 JSON.parse(image?.photo).map((item, index) => {
-                                    console.log(item.photo, 'item.photo')
                                     return (
-                                        <Col xs={12} sm={12} md={12} lg={4} xl={4} key={index}>
+                                        <Col xs={12} sm={12} md={12} lg={4} xl={24} key={index}>
                                             {/* onContextMenu={handleContextMenu}  */}
                                             <div className="image" >
                                                 <Image

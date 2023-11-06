@@ -75,11 +75,11 @@ const App = () => {
     data: undefined,
   });
   const [valueNodeCheck, setValueNodeCheck] = useState();
+  console.log(valueNodeCheck,'valueNodeCheck')
   const [nodeCheck, setNodeCheck] = useState({
     status: false,
     data: undefined,
   });
-  console.log(nodeCheck?.data?.nodeCheck, "nodeCheck?.data?.nodeCheck?");
   const [comfimSave, setComfimSave] = useState(false);
   let sum = 0;
   for (let i = 0; i < dataNew?.length; i++) {
@@ -163,8 +163,8 @@ const App = () => {
   // lưu
   const submitSave = async () => {
     const dataFind = datas?.data?.find((item) => item._id == uploadData?.data);
-    const newData = [...dataNew, ...JSON.parse(dataFind.data)];
     if (uploadData?.status == true) {
+      const newData = [...dataNew, ...JSON.parse(dataFind.data)];
       setLoading(true);
       await dispatch(uploadmonthgori({ _id: uploadData?.data, data: newData }));
       setLoading(false);
@@ -172,12 +172,12 @@ const App = () => {
       setUploadData(false);
       setUploadData({ status: false, data: undefined });
     } else {
-      setLoading(true);
       await dispatch(addDataMonth({ data: dataNew, name: valueSave }));
       setValueSave();
       setUpload(false);
     }
 
+    setLoading(false);
     setComfimSave(false);
     setNameFile();
     refInput.current.value = "";
@@ -376,7 +376,7 @@ const App = () => {
     };
     for (let i = 0; i < dataNew.length; i++) {
       if (dataNew[i].key == nodeCheck.data.key) {
-        dataNew[i].nodeCheck = [newDataNode];
+        dataNew[i].nodeCheck =dataNew[i].nodeCheck?.length>0? [...dataNew[i].nodeCheck,newDataNode]: [newDataNode];
       }
     }
     await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
@@ -393,6 +393,7 @@ const App = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          width: '100%',
         }}
       >
         <div>
@@ -426,7 +427,8 @@ const App = () => {
           </div>
         </div>
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <br />
+      <div style={{ display: "flex", justifyContent: "space-between", width: '100%', }}>
         <div>
           <Button style={{ cursor: "pointer" }}>
             <label htmlFor="up-file">
@@ -732,42 +734,39 @@ const App = () => {
           {nodeCheck?.data?.nodeCheck == undefined ? (
             <div></div>
           ) : (
-            nodeCheck?.data?.nodeCheck
-              ?.slice()
-              ?.reverse()
-              ?.map((item) => {
-                return (
-                  <div>
-                    <hr />
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div>
-                        <span
-                          style={{
-                            fontSize: 14,
-                            fontStyle: "italic",
-                            fontWeight: "500",
-                          }}
-                        >
-                          {item.time}
-                        </span>
-                        <div>{item.value}</div>
-                      </div>
-                      <div
-                        style={{ cursor: "pointer" }}
-                        onClick={() => console.log(item, "3ewfd")}
+            nodeCheck?.data?.nodeCheck?.map((item) => {
+              return (
+                <div>
+                  <hr />
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <div>
+                      <span
+                        style={{
+                          fontSize: 14,
+                          fontStyle: "italic",
+                          fontWeight: "500",
+                        }}
                       >
-                        <DeleteOutlined />
-                      </div>
+                        {item.time}
+                      </span>
+                      <div>{item.value}</div>
+                    </div>
+                    <div
+                      style={{ cursor: "pointer" }}
+                      onClick={() => console.log(item, "3ewfd")}
+                    >
+                      <DeleteOutlined />
                     </div>
                   </div>
-                );
-              })
+                </div>
+              );
+            })
           )}
         </div>
       </Modal>
