@@ -75,7 +75,6 @@ const App = () => {
     data: undefined,
   });
   const [valueNodeCheck, setValueNodeCheck] = useState();
-  console.log(valueNodeCheck,'valueNodeCheck')
   const [nodeCheck, setNodeCheck] = useState({
     status: false,
     data: undefined,
@@ -180,6 +179,8 @@ const App = () => {
     setLoading(false);
     setComfimSave(false);
     setNameFile();
+    message.success('Lưu thành công')
+
     refInput.current.value = "";
   };
 
@@ -195,6 +196,8 @@ const App = () => {
     setLoading(false);
     setUploadPriveCode({ status: false, data: undefined });
     setValueUploadPriveCode();
+    message.success('Cập nhật tiền cọc thành công')
+
   };
 
   const submitCole = () => {
@@ -216,6 +219,8 @@ const App = () => {
     setLoading(false);
     setComfimUploadStauts({ status: false, data: undefined });
     setValueSave;
+    message.success('Cập nhật trạng thái thành công')
+
   };
   const handleCancel = () => {
     setComfimUploadStauts({ status: false, data: undefined });
@@ -241,6 +246,13 @@ const App = () => {
       title: "Ghi chú",
       dataIndex: "notes",
       key: "age",
+      render: (notes) => (
+        <div>
+          <span style={{ color: notes == "khách cũ" ? "#FF9900" : "blue", fontWeight: '600' }}>
+            {notes}
+          </span>
+        </div>
+      ),
     },
     {
       title: "Ghi chú hàng hóa",
@@ -298,6 +310,7 @@ const App = () => {
           onClick={() => setNodeCheck({ status: true, data: data })}
         >
           <EyeOutlined />
+          {nodeCheck?.length > 0 ? <span>Check</span> : ""}
         </span>
       ),
     },
@@ -343,6 +356,7 @@ const App = () => {
     await dispatch(removemonthgori({ _id: comfimDelete?.data }));
     setLoading(false);
     setComfimDelete({ status: false, data: undefined });
+    message.success('Xóa thành công')
   };
   const handleCancel1 = () => {
     setComfimDelete({ status: false, data: undefined });
@@ -364,6 +378,10 @@ const App = () => {
   for (let i = 0; i < tc?.length; i++) {
     sumTc += +Math.ceil(tc[i].needs_pay * ((100 - 0) / 100));
   }
+  let sumBo = 0;
+  for (let i = 0; i < bo?.length; i++) {
+    sumBo += bo[i].needs_pay;
+  }
   const onChange1 = (checked) => {
     setUploadData({ status: checked, data: uploadData?.data });
   };
@@ -376,13 +394,18 @@ const App = () => {
     };
     for (let i = 0; i < dataNew.length; i++) {
       if (dataNew[i].key == nodeCheck.data.key) {
-        dataNew[i].nodeCheck =dataNew[i].nodeCheck?.length>0? [...dataNew[i].nodeCheck,newDataNode]: [newDataNode];
+        dataNew[i].nodeCheck =
+          dataNew[i].nodeCheck?.length > 0
+            ? [...dataNew[i].nodeCheck, newDataNode]
+            : [newDataNode];
       }
     }
     await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
     setNodeCheck({ status: false, data: undefined });
     setValueNodeCheck();
     setLoading(false);
+    message.success('Cập nhật thành công')
+
   };
 
   return (
@@ -393,7 +416,7 @@ const App = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          width: '100%',
+          width: "100%",
         }}
       >
         <div>
@@ -413,7 +436,8 @@ const App = () => {
           }}
         >
           <h5 style={{ color: "red", fontSize: 20, marginRight: 30 }}>
-            Tổng tiền : {sum?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
+            Tổng tiền :{" "}
+            {(sum - sumBo)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
           </h5>
           <div>
             <Select
@@ -428,7 +452,13 @@ const App = () => {
         </div>
       </div>
       <br />
-      <div style={{ display: "flex", justifyContent: "space-between", width: '100%', }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
         <div>
           <Button style={{ cursor: "pointer" }}>
             <label htmlFor="up-file">
@@ -713,7 +743,9 @@ const App = () => {
       >
         <Input
           placeholder="Nhập số tiền cọc"
-          defaultValue={uploadPriveCode?.data?.has_paid}
+          defaultValue={uploadPriveCode?.data?.has_paid
+            ?.toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           onChange={(e) => setValueUploadPriveCode(e.target.value)}
         />
       </Modal>
@@ -727,6 +759,7 @@ const App = () => {
       >
         <Input
           placeholder="Nhập ghi chú"
+          key={nodeCheck?.status}
           defaultValue={valueNodeCheck}
           onChange={(e) => setValueNodeCheck(e.target.value)}
         />
@@ -755,7 +788,7 @@ const App = () => {
                       >
                         {item.time}
                       </span>
-                      <div>{item.value}</div>
+                      <div style={{ color: 'blue' }}>{item.value}</div>
                     </div>
                     <div
                       style={{ cursor: "pointer" }}
