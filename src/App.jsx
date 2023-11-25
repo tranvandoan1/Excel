@@ -56,7 +56,8 @@ const App = () => {
   const datas = useSelector((data) => data.dataMonth.value);
   const [update, setUpload] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [dataNew, setDataNew] = useState([]);
+  const [dataNew, setDataNew] = useState();
+  const [dataSelectStatus, setDataSelectStatus] = useState([]);
   const [nameFile, setNameFile] = useState("");
   const [valueSave, setValueSave] = useState();
   const [valueUploadPriveCode, setValueUploadPriveCode] = useState();
@@ -82,7 +83,10 @@ const App = () => {
   const [comfimSave, setComfimSave] = useState(false);
   let sum = 0;
   for (let i = 0; i < dataNew?.length; i++) {
-    sum += +Math.ceil(dataNew[i].needs_pay * ((100 - 0) / 100));
+    if (dataNew[i].status !== 10) {
+      sum += +Math.ceil(dataNew[i].needs_pay * ((100 - 0) / 100));
+
+    }
   }
   useEffect(() => {
     dispatch(getAllDataMonth());
@@ -337,6 +341,8 @@ const App = () => {
             <span className="hoan">Hoàn</span>
           ) : status == 5 ? (
             <span className="hoan">Bỏ</span>
+          ) : status == 10 ? (
+            <span className="ck">Chuyển khoản</span>
           ) : (
             <span className="susse">Thành công</span>
           )}
@@ -368,15 +374,21 @@ const App = () => {
   dataNew?.map((item) => {
     if (item.status == 5) {
       bo?.push(item);
-    } else if (item.status == 4) {
+    } else if (item.status == 4 || item.status == 10) {
       tc?.push(item);
     } else if (item.status == 3) {
       hoan?.push(item);
     }
   });
   let sumTc = 0;
+  let sumck = 0;
   for (let i = 0; i < tc?.length; i++) {
-    sumTc += +Math.ceil(tc[i].needs_pay * ((100 - 0) / 100));
+    if (tc[i].status == 10) {
+      sumck += +Math.ceil(tc[i].has_paid * ((100 - 0) / 100));
+    } else {
+      sumTc += +Math.ceil(tc[i].needs_pay * ((100 - 0) / 100));
+
+    }
   }
   let sumBo = 0;
   for (let i = 0; i < bo?.length; i++) {
@@ -408,6 +420,13 @@ const App = () => {
 
   };
 
+  const handleChangeStatus = (value) => {
+    const newData = dataNew.filter(item => item.status == value)
+    console.log(newData, 'newData')
+    setDataSelectStatus(newData)
+  };
+  console.log(dataSelectStatus, 'dataSelectStatus')
+
   return (
     <div className="header">
       {loading == true && <Loading />}
@@ -426,7 +445,7 @@ const App = () => {
           <div>Thành công : {tc?.length}</div>
           <div>
             Tổng tiền thành công :{" "}
-            {sumTc?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
+            {(sumTc + sumck)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
           </div>
         </div>
         <div
@@ -437,7 +456,7 @@ const App = () => {
         >
           <h5 style={{ color: "red", fontSize: 20, marginRight: 30 }}>
             Tổng tiền :{" "}
-            {(sum - sumBo)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
+            {((sum - sumBo) + sumck)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
           </h5>
           <div>
             <Select
@@ -449,7 +468,34 @@ const App = () => {
               options={dataMonth}
             />
           </div>
+
         </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Select
+            defaultValue="0"
+            onChange={handleChangeStatus}
+            options={[
+              { value: '0', label: 'Đang vân chuyển' },
+              { value: '1', label: 'Chờ duyệt hàng' },
+              { value: '2', label: 'Đang giao' },
+              { value: '3', label: 'Hoàn' },
+              { value: '4', label: 'Thành công' },
+              { value: '5', label: 'Bỏ' },
+              { value: '10', label: 'Chuyển khoản' },
+            ]}
+          />
+          {
+            dataSelectStatus !== undefined &&
+            <Button onClick={() => setDataSelectStatus(undefined)}>Hủy</Button>
+
+          }
+        </div>
+
       </div>
       <br />
       <div
@@ -505,7 +551,7 @@ const App = () => {
       <div>
         <Table
           columns={columns}
-          dataSource={dataNew}
+          dataSource={dataSelectStatus == undefined ? dataNew : dataSelectStatus}
           style={{ width: "100%" }}
           expandable={{
             expandedRowRender: (record) => (
@@ -689,6 +735,9 @@ const App = () => {
           <br />
           <Radio style={{ fontSize: 18 }} value={4}>
             Thành công
+          </Radio>
+          <Radio style={{ fontSize: 18 }} value={10}>
+            Chuyển khoản
           </Radio>
           <Radio style={{ fontSize: 18 }} value={5}>
             Bỏ
