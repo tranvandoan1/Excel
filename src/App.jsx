@@ -84,7 +84,7 @@ const App = () => {
   let sum = 0;
   for (let i = 0; i < dataNew?.length; i++) {
     if (dataNew[i].status !== 10) {
-      sum += +Math.ceil(dataNew[i].needs_pay * ((100 - 0) / 100));
+      sum += +Math.ceil(dataNew[i].price * ((100 - 0) / 100));
 
     }
   }
@@ -135,20 +135,21 @@ const App = () => {
         });
         rows.push(rowData);
       });
+
       let datas = [];
       rows.map((item) => {
         const newObject = {};
-        newObject["name"] = item["Người nhận"];
-        newObject["commodity_notes"] = item["Ghi chú sản phẩm"];
+        // newObject["name"] = item["Người nhận"];
+        // newObject["commodity_notes"] = item["Ghi chú sản phẩm"];
         newObject["price"] = item["COD"];
         newObject["status"] = item["Trạng thái"];
-        newObject["source"] = item["Facebook Page"];
+        // newObject["source"] = item["Facebook Page"];
         newObject["code"] = item["Mã vận đơn"];
         newObject["code_pro"] = item["Mã đơn hàng"];
-        newObject["time"] = item["Ngày tạo đơn"];
-        newObject["name_pro"] = item["Sản phẩm"];
-        newObject["address"] = item["Địa chỉ"];
-        newObject["phone"] = item["SĐT"];
+        // newObject["time"] = item["Ngày tạo đơn"];
+        // newObject["name_pro"] = item["Sản phẩm"];
+        // newObject["address"] = item["Địa chỉ"];
+        // newObject["phone"] = item["SĐT"];
         return datas.push(newObject);
       });
       // lọc giá trị trùng
@@ -169,10 +170,13 @@ const App = () => {
         }
       }
       );
+
+      console.log(newData.length, 'newData')
       setDataNew(newData);
     };
     reader.readAsBinaryString(file);
   };
+  console.log(dataNew, 'dataNew123')
 
   // lưu
   const submitSave = async () => {
@@ -401,31 +405,33 @@ const App = () => {
   for (let i = 0; i < bo?.length; i++) {
     sumBo += bo[i].needs_pay;
   }
-  const onChange1 = (checked) => {
-    setUploadData({ status: checked, data: uploadData?.data });
-  };
-  const submitSaveNodeCheck = async () => {
-    setLoading(true);
-    const newDataNode = {
-      _id: Math.random(),
-      value: valueNodeCheck,
-      time: `${year}-${month}-${date} ${hours}-${minutes}`,
-    };
-    for (let i = 0; i < dataNew.length; i++) {
-      if (dataNew[i].key == nodeCheck.data.key) {
-        dataNew[i].nodeCheck =
-          dataNew[i].nodeCheck?.length > 0
-            ? [...dataNew[i].nodeCheck, newDataNode]
-            : [newDataNode];
-      }
-    }
-    await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
-    setNodeCheck({ status: false, data: undefined });
-    setValueNodeCheck();
-    setLoading(false);
-    message.success('Cập nhật thành công')
+  console.log(sumck,'sumck')
+  console.log(sumTc,'sumTc')
+  // const onChange1 = (checked) => {
+  //   setUploadData({ status: checked, data: uploadData?.data });
+  // };
+  // const submitSaveNodeCheck = async () => {
+  //   setLoading(true);
+  //   const newDataNode = {
+  //     _id: Math.random(),
+  //     value: valueNodeCheck,
+  //     time: `${year}-${month}-${date} ${hours}-${minutes}`,
+  //   };
+  //   for (let i = 0; i < dataNew.length; i++) {
+  //     if (dataNew[i].key == nodeCheck.data.key) {
+  //       dataNew[i].nodeCheck =
+  //         dataNew[i].nodeCheck?.length > 0
+  //           ? [...dataNew[i].nodeCheck, newDataNode]
+  //           : [newDataNode];
+  //     }
+  //   }
+  //   await dispatch(uploadmonthgori({ _id: selectData?._id, data: dataNew }));
+  //   setNodeCheck({ status: false, data: undefined });
+  //   setValueNodeCheck();
+  //   setLoading(false);
+  //   message.success('Cập nhật thành công')
 
-  };
+  // };
 
   const handleChangeStatus = (value) => {
     const newData = dataNew.filter(item => item.status == value)
@@ -520,9 +526,9 @@ const App = () => {
                 </div>
               )}
 
-              {nameFile && dataNew.length > 0 && (
+              {/* {nameFile && dataNew.length > 0 && (
                 <span className="spanUploadName">{nameFile}</span>
-              )}
+              )} */}
             </label>
           </Button>
           <Input
@@ -554,7 +560,7 @@ const App = () => {
           Xóa
         </Button>
       </div>
-      <div>
+      {/* <div>
         <Table
           columns={columns}
           dataSource={dataSelectStatus == undefined ? dataNew : dataSelectStatus}
@@ -598,7 +604,7 @@ const App = () => {
             rowExpandable: (record) => record.name !== "Not Expandable",
           }}
         />
-      </div>
+      </div> */}
       {/* {dataNew?.length > 0 ? (
         <div>
           <Table
@@ -712,7 +718,7 @@ const App = () => {
         })
       )} */}
 
-      <Modal
+      {/* <Modal
         title={<span style={{ fontSize: 20 }}>Cập nhật trạng thái</span>}
         open={comfimUploadStauts.status}
         onOk={uploadStatus}
@@ -857,7 +863,7 @@ const App = () => {
             })
           )}
         </div>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
