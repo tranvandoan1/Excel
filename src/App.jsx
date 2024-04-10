@@ -138,25 +138,36 @@ const App = () => {
       let datas = [];
       rows.map((item) => {
         const newObject = {};
-        newObject["name"] = item["Tên khách hàng"];
-        newObject["notes"] = item["Ghi chú"];
-        newObject["commodity_notes"] = item["Ghi chú hàng hóa"];
-        // newObject["price"] = item["Giá bán"];
-        newObject["needs_pay"] = item["Khách cần trả"];
-        newObject["has_paid"] = item["Khách đã trả"];
-        newObject["code"] = item["Mã hóa đơn"];
-        newObject["seller"] = item["Người bán"];
-        newObject["creator"] = item["Người tạo"];
-        newObject["time"] = item["Thời gian"];
-        newObject["cash"] = item["Tiền mặt"];
-        newObject["name_pro"] = item["Tên hàng"];
-        newObject["address"] = item["Địa chỉ (Khách hàng)"];
-        newObject["phone"] = item["Điện thoại"];
+        newObject["name"] = item["Người nhận"];
+        newObject["commodity_notes"] = item["Ghi chú sản phẩm"];
+        newObject["price"] = item["COD"];
+        newObject["status"] = item["Trạng thái"];
+        newObject["source"] = item["Facebook Page"];
+        newObject["code"] = item["Mã vận đơn"];
+        newObject["code_pro"] = item["Mã đơn hàng"];
+        newObject["time"] = item["Ngày tạo đơn"];
+        newObject["name_pro"] = item["Sản phẩm"];
+        newObject["address"] = item["Địa chỉ"];
+        newObject["phone"] = item["SĐT"];
         return datas.push(newObject);
       });
+      // lọc giá trị trùng
+      let coincide = new Set();
+      let result = datas.filter(obj => {
+        if (coincide.has(obj.code_pro)) {
+          return false;
+        }
+        coincide.add(obj.code_pro);
+        return true;
+      });
       const newData = [];
-      datas?.map((item) =>
-        newData.push({ key: Math.random(), ...item, status: 0 })
+
+      result?.map((item) => {
+        if (String(item.phone).length > 1) {
+          newData.push({ key: Math.random(), ...item, status: item.status == 'Đã nhận' ? 1 : 0 })
+
+        }
+      }
       );
       setDataNew(newData);
     };
@@ -374,7 +385,7 @@ const App = () => {
   dataNew?.map((item) => {
     if (item.status == 5) {
       bo?.push(item);
-    } else if (item.status == 4 || item.status == 10) {
+    } else if (item.status == 1) {
       tc?.push(item);
     } else if (item.status == 3) {
       hoan?.push(item);
@@ -383,12 +394,8 @@ const App = () => {
   let sumTc = 0;
   let sumck = 0;
   for (let i = 0; i < tc?.length; i++) {
-    if (tc[i].status == 10) {
-      sumck += +Math.ceil(tc[i].has_paid * ((100 - 0) / 100));
-    } else {
-      sumTc += +Math.ceil(tc[i].needs_pay * ((100 - 0) / 100));
+    sumTc += +Math.ceil(tc[i].price * ((100 - 0) / 100));
 
-    }
   }
   let sumBo = 0;
   for (let i = 0; i < bo?.length; i++) {
@@ -422,10 +429,8 @@ const App = () => {
 
   const handleChangeStatus = (value) => {
     const newData = dataNew.filter(item => item.status == value)
-    console.log(newData, 'newData')
     setDataSelectStatus(newData)
   };
-  console.log(dataSelectStatus, 'dataSelectStatus')
 
   return (
     <div className="header">
@@ -440,6 +445,7 @@ const App = () => {
       >
         <div>
           <h1>Danh sách khách hàng</h1>
+          <div>Tồng đơn : {dataNew?.length}</div>
           <div>Hoàn : {hoan?.length}</div>
           <div>Bỏ : {bo?.length}</div>
           <div>Thành công : {tc?.length}</div>
