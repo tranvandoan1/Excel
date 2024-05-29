@@ -4,7 +4,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 
 import { store } from './app/Store.js';
-import DataFashion from './SaveDataFashion/dataFashion.jsx'
+import DataFashion from './SaveDataFashion/dataFashion'
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
         <DataFashion />
