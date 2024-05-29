@@ -7,8 +7,7 @@ const AddData = ({
 }) => {
 
     const deleteDate = (dataSelect) => {
-        const newData = dataFashion?.filter(item => item.id !== dataSelect.id)
-        btnComfim(newData)
+        btnComfim(dataSelect)
     }
 
 

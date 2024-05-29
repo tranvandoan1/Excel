@@ -154,7 +154,8 @@ const DataFashion = () => {
 
     const btAt = async (e) => {
         setLoading(true)
-        const data = { ...dataFashionind, data: JSON.stringify(e) }
+        const newData = JSON.parse(dataFashionind?.data)?.filter(item => item.id !== e.id)
+        const data = { ...dataFashionind, data: JSON.stringify(newData) }
         await dispatch(uploadDataDataFashionF({ data: data }))
         setLoading(false)
         message.success('Xóa thành công')
@@ -177,7 +178,7 @@ const DataFashion = () => {
             }
             const data = { ...dataFashionind, data: JSON.stringify(dataCheck) }
             await dispatch(uploadDataDataFashionF({ data: data }))
-            setLoading(false)
+            setLoading(false)   
             message.success('Upload thành công')
         }
     }
@@ -213,7 +214,6 @@ const DataFashion = () => {
         } else if (dataPhoneFilter?.length <= 0) {
             message.warning('Upload thành công')
         } else {
-            // console.log(dataPhoneFilter, 'dataPhoneFiltersdsqw')
             setDataSum(dataPhoneFilter)
         }
     }
