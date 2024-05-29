@@ -5,8 +5,8 @@ import { startTransition, useEffect, useState } from 'react';
 import AddData from './AddData';
 import Note from './Note';
 import { useDispatch, useSelector } from 'react-redux';
-import { addDataDataFashionF, getAllDataFashionF, uploadDataDataFashionF } from '../features/dataFashion';
-import Loading from '../Loading';
+import { addDataDataFashionF, getAllDataFashionF, uploadDataDataFashionF } from './features/dataFashion';
+import Loading from './Loading';
 const dataMonth = [
     { value: "1", label: "Tháng 1" },
     { value: "2", label: "Tháng 2" },
