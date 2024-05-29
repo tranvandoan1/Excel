@@ -206,11 +206,11 @@ const DataFashion = () => {
 
     const searchPhone = (e) => {
         const dataPhoneFilter = dataFashionindDate?.filter(item => item.phone == filterPhone)
-
         if (!validatePhoneNumber(filterPhone)) {
-            setValuePhone('')
             message.warning('Số điện thoại không đúng')
-        } else if (!dataPhoneFilter) {
+            setValuePhone('')
+            setFilterPhone()
+        } else if (dataPhoneFilter?.length <= 0) {
             message.warning('Upload thành công')
         } else {
             // console.log(dataPhoneFilter, 'dataPhoneFiltersdsqw')
@@ -288,11 +288,11 @@ const DataFashion = () => {
                     <div style={{ display: 'flex', alignItems: 'center' }}> <h3 style={{ marginRight: 20 }}>Tổng đơn chưa có đ/c</h3>
                         <span style={{ color: 'red', fontSize: 20, fontWeight: 700, marginRight: 20 }}>  {dataFashionindDateNoAdress?.length}</span>
 
-                        <Button disabled={tab !== 'DATA' ? true : false} type={filter==true?'default':'primary'} onClick={() => setFilter(!filter)}>Lọc</Button>
+                        <Button disabled={tab !== 'DATA' ? true : false} type={filter == true ? 'default' : 'primary'} onClick={() => setFilter(!filter)}>Lọc</Button>
                     </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Input onMouseUp={() => setFilter(false)} style={{ marginRight: 10 }} placeholder='Tìm kiếm ...' onChange={(e) => setFilterPhone(e.target.value)} value={filterPhone}/>
+                    <Input onMouseUp={() => setFilter(false)} style={{ marginRight: 10 }} placeholder='Tìm kiếm ...' onChange={(e) => setFilterPhone(e.target.value)} value={filterPhone} />
                     <Button type='primary' onClick={() => searchPhone()}>Tìm</Button>
                     {
                         dataSum?.length > 0 &&
