@@ -55,8 +55,17 @@ const App = () => {
   });
   const datas = useSelector((data) => data.dataMonth.value);
   const [update, setUpload] = useState(false);
+  const [update1, setUpload1] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dataNew, setDataNew] = useState();
+  const [dataNewSS, setDataNewSS] = useState();
+  const [dataNewGoc, setDataNewGoc] = useState();
+  const [dataNewTONG, setDataNewTONG] = useState();
+
+
+  const [dataNewGocSS, setDataNewGocSS] = useState();
+
+
   const [dataSelectStatus, setDataSelectStatus] = useState([]);
   const [nameFile, setNameFile] = useState("");
   const [valueSave, setValueSave] = useState();
@@ -93,17 +102,18 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (datas?.data?.length > 0) {
-      const dataMonthSelect = datas?.data?.find(
-        (item) => item.month.slice(6, 8) == selectMonth
-      );
-      setSelectData(dataMonthSelect);
-      setDataNew(
-        dataMonthSelect == undefined ? [] : JSON.parse(dataMonthSelect?.data)
-      );
-    }
+    // if (datas?.data?.length > 0) {
+    //   const dataMonthSelect = datas?.data?.find(
+    //     (item) => item.month.slice(6, 8) == selectMonth
+    //   );
+    //   setSelectData(dataMonthSelect);
+    //   setDataNew(
+    //     dataMonthSelect == undefined ? [] : JSON.parse(dataMonthSelect?.data)
+    //   );
+    // }
   }, [datas, selectMonth, nodeCheck]);
   const refInput = useRef();
+  const refInput1 = useRef();
 
   // nhập execel
   const importData = (e) => {
@@ -122,7 +132,11 @@ const App = () => {
       /* Convert array of arrays */
       const fileData = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-      let headers = fileData[0].map((res) => res.trim());
+      // console.log(fileData[0], 'fileData[0]')
+      let headers = fileData[0].map((res) => res.trim());///lấy ra tiêu đề
+      // console.log(headers, 'headers2e1312')
+      // console.log(fileData.splice(0, 1), 'fileData.splice(0, 1)')
+
       fileData.splice(0, 1);
       if (headers.length === 0) {
         headers = fileData[0].map((res) => res.trim());
@@ -135,7 +149,7 @@ const App = () => {
         });
         rows.push(rowData);
       });
-
+      // console.log(rows, '2ewfd')
       let datas = [];
       rows.map((item) => {
         const newObject = {};
@@ -152,6 +166,15 @@ const App = () => {
         // newObject["phone"] = item["SĐT"];
         return datas.push(newObject);
       });
+      let coincide1 = new Set();
+      let result1 = rows.filter(obj => {
+        if (coincide1.has(obj['Mã vận đơn'])) {
+          return false;
+        }
+        coincide1.add(obj['Mã vận đơn']);
+        return true;
+      });
+      // console.log(result1, '21e32efwe')
       // lọc giá trị trùng
       let coincide = new Set();
       let result = datas.filter(obj => {
@@ -161,6 +184,7 @@ const App = () => {
         coincide.add(obj.code_pro);
         return true;
       });
+
       const newData = [];
 
       result?.map((item) => {
@@ -169,10 +193,82 @@ const App = () => {
 
         }
       }
+
+
+      );
+      const newData1 = [];
+
+      result1?.map((item) => {
+        if (item['Trạng thái'] == 'Đã nhận') {
+          newData1.push(item)
+        }
+        // if (String(item.phone).length > 1) {
+        //   newData1.push({ key: Math.random(), ...item, status: item['Trạng thái'] == 'Đã nhận' ? 1 : 0 })
+
+        // }
+      }
       );
 
-      console.log(newData.length, 'newData')
+      // console.log(newData1, '3e2ewrenewData1')
+      setDataNewGoc(newData1);
+      setDataNewGocSS(newData1);
       setDataNew(newData);
+    };
+    reader.readAsBinaryString(file);
+  };
+  // nhập execel
+  const importData1 = (e) => {
+    setUpload1(true);
+    const file = e.target.files[0];
+
+    setNameFile(file.name);
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    reader.onload = (event) => {
+      const bstr = event.target.result;
+      const wb = XLSX.read(bstr, { type: rABS ? "binary" : "array" });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const fileData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      // console.log(fileData, 'fileData2e3e')
+      let stt = 0
+      for (let i = 0; i < fileData.length; i++) {
+        if (fileData[i][0] == 'STT') {
+          // console.log(fileData[i][0],'fileData[i][0]')
+          stt = fileData.indexOf(fileData[i])
+        }
+
+      }
+      // console.log(stt+1, 'stt213')
+      // console.log(fileData[Number(stt)], 'fileData[13]')
+      let headers = fileData[Number(stt)].map((res) => res.trim());
+      // console.log(headers, 'headers123e2')
+      // console.log(fileData.splice(0, 1), 'e23wfd')
+      fileData.splice(0, 1);
+      if (headers.length === 0) {
+        headers = fileData[0].map((res) => res.trim());
+      }
+      const rows = [];
+      fileData.forEach((item) => {
+        let rowData = {};
+        item.forEach((element, index, key) => {
+          rowData[headers[index]] = element;
+        });
+        rows.push(rowData);
+      });
+      // console.log(rows, '2ewfd3132123233')
+      const data = []
+      rows.filter(item => {
+        if (item['Tiền CoD'] <= 30000 && item['Tiền CoD'] > 0) {
+          data.push(item)
+        }
+      })
+
+      console.log(data, 'data12123')
+      setDataNewSS(data)
+
     };
     reader.readAsBinaryString(file);
   };
@@ -395,6 +491,7 @@ const App = () => {
       hoan?.push(item);
     }
   });
+  console.log(dataNew, 'ewf')
   let sumTc = 0;
   let sumck = 0;
   for (let i = 0; i < tc?.length; i++) {
@@ -405,8 +502,7 @@ const App = () => {
   for (let i = 0; i < bo?.length; i++) {
     sumBo += bo[i].needs_pay;
   }
-  console.log(sumck,'sumck')
-  console.log(sumTc,'sumTc')
+  console.log(tc, 'sumck')
   // const onChange1 = (checked) => {
   //   setUploadData({ status: checked, data: uploadData?.data });
   // };
@@ -438,8 +534,38 @@ const App = () => {
     setDataSelectStatus(newData)
   };
 
+  let sumthuc = 0;
+  for (let i = 0; i < dataNewTONG?.length; i++) {
+    sumthuc += +Math.ceil(dataNewTONG[i]['COD'] * ((100 - 0) / 100));
+
+  }
+  console.log(sumthuc, 'sumthuc')
+  const sosanh = () => {
+    console.log(dataNewGoc, 'dataNewGoc')
+    console.log(dataNewSS, 'dataNewSS')
+    let ketQuaKOTRUNG = dataNewGoc.filter(itemA => dataNewSS.some(itemB => itemA['Mã vận đơn'].slice(-10) === itemB['Mã ĐH'].slice(-10)));
+    let ketQuaTRUNG = (dataNewTONG == undefined ? dataNewGoc : dataNewTONG).filter(itemA => !dataNewSS.some(itemB => itemA['Mã vận đơn'].slice(-10) === itemB['Mã ĐH'].slice(-10)));
+    console.log(ketQuaKOTRUNG, 'ketQuaKOTRUNG')
+    console.log(ketQuaTRUNG, 'ketQuaTRUNG')
+    setDataNewTONG(ketQuaTRUNG)
+
+  }
+  const [phansoDuocChon, setPhanTuDuocChon] = useState([]);
+
+  const copyPhanTu = (phanTu) => {
+    navigator.clipboard.writeText(phanTu);
+    alert(`Đã sao chép: ${phanTu}`);
+  };
+
+  const handleChonPhanTu = (phanTu) => {
+    if (phansoDuocChon.includes(phanTu)) {
+      setPhanTuDuocChon(phansoDuocChon.filter(item => item !== phanTu));
+    } else {
+      setPhanTuDuocChon([...phansoDuocChon, phanTu]);
+    }
+  };
   return (
-    <div className="header">
+    <div className="header"  >
       {loading == true && <Loading />}
       <div
         style={{
@@ -451,14 +577,17 @@ const App = () => {
       >
         <div>
           <h1>Danh sách khách hàng</h1>
+          {/* <div>Hoàn : {hoan?.length}</div>
+          <div>Bỏ : {bo?.length}</div> */}
           <div>Tồng đơn : {dataNew?.length}</div>
-          <div>Hoàn : {hoan?.length}</div>
-          <div>Bỏ : {bo?.length}</div>
-          <div>Thành công : {tc?.length}</div>
+          <div>Tồng đơn Thực : {dataNewTONG?.length}</div>
+          <div>Thành công  hao hụt: {(sumTc - sumthuc)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div><br />
+          <div>Thành công THỰC TẾ : <span style={{ color: 'red', fontSize: 25, fontWeight: 600 }}>{sumthuc?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span></div>
           <div>
             Tổng tiền thành công :{" "}
             {(sumTc + sumck)?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}đ
           </div>
+          <div>Thành công : {tc?.length}</div>
         </div>
         <div
           style={{
@@ -520,11 +649,11 @@ const App = () => {
         <div>
           <Button style={{ cursor: "pointer" }}>
             <label htmlFor="up-file">
-              {update == false && (
-                <div className="buttonUpfile">
-                  <UploadOutlined className="icon" /> Tải file excel
-                </div>
-              )}
+              {/* {update == false && ( */}
+              <div className="buttonUpfile">
+                <UploadOutlined className="icon" /> Tải file excel
+              </div>
+              {/* )} */}
 
               {/* {nameFile && dataNew.length > 0 && (
                 <span className="spanUploadName">{nameFile}</span>
@@ -539,6 +668,32 @@ const App = () => {
               importData(e);
             }}
             id="up-file"
+          />
+        </div>
+
+        {/* đâsd */}
+        <div>
+          <Button style={{ cursor: "pointer" }}>
+            <label htmlFor="up-file1">
+              {/* {update1 == false && ( */}
+              <div className="buttonUpfile">
+                <UploadOutlined className="icon" /> Tải file excel 1
+              </div>
+              {/* )} */}
+
+              {/* {nameFile && dataNew.length > 0 && (
+                <span className="spanUploadName">{nameFile}</span>
+              )} */}
+            </label>
+          </Button>
+          <Input
+            type="file"
+            ref={refInput}
+            onChange={(e) => {
+              refInput.current.value = "";
+              importData1(e);
+            }}
+            id="up-file1"
           />
         </div>
         {update && (
@@ -559,6 +714,50 @@ const App = () => {
         >
           Xóa
         </Button>
+      </div>
+      <Button onClick={() => sosanh()}>So sánh</Button>
+      <button onClick={() => phansoDuocChon.forEach(copyPhanTu)}>Sao chép các phần tử đã chọn</button>
+      <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          {
+            (dataNewTONG == undefined ? <div style={{ cursor: "pointer", display: 'flex', flexDirection: 'column' }}>
+              {
+                dataNewGoc?.map(item => {
+                  return (
+                    <div className="dsjiasdj" onClick={() => handleChonPhanTu(item['Mã vận đơn'].slice(-10))} style={{ cursor: 'pointer', width: '100%', height: 30, color: phansoDuocChon.includes(item['Mã vận đơn'].slice(-10)) ? 'red' : 'black' }}>
+                      <span>{item['Mã vận đơn'].slice(-10)}</span>
+                    </div>
+                  )
+                })
+              }
+            </div> : <div style={{ display: 'flex', alignItems: 'center', width: '70%', flexDirection: 'column' }}>
+              {
+                dataNewTONG?.map(item => {
+                  return (
+                    <div className="dsjiasdj">
+                      <span>{item['Mã vận đơn'].slice(-10)}</span>
+                    </div>
+                  )
+                })
+              }
+            </div>)
+          }
+
+
+
+        </div>
+
+        <div>
+          {
+            dataNewGocSS?.map(item => {
+              return (
+                <div className="dsjiasdj" onClick={() => handleChonPhanTu(item['Mã vận đơn'].slice(-10))} style={{ cursor: 'pointer', width: '100%', height: 30, color: phansoDuocChon.includes(item['Mã vận đơn'].slice(-10)) ? 'red' : 'black' }}>
+                  <span>{item['Mã vận đơn'].slice(-10)}</span>
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
       {/* <div>
         <Table

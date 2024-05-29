@@ -10,7 +10,18 @@
 #up-file {
   display: none;
 }
+.up-file1 > h3 {
+  border-bottom: 1px solid rgb(214, 214, 214);
+  padding: 10px 0;
+}
+#up-file1 {
+  display: none;
+}
 
+
+#up-fil1 {
+  display: none;
+}
 .header {
   display: flex;
   flex-direction: column;
@@ -116,4 +127,8 @@ table tbody td {
     transition: 1s ease-in;
     color: rgb(96, 118, 255);
   }
+}
+.dsjiasdj:nth-child(100n) {
+  color: red !; /* Đổi màu chữ thành màu đỏ cho mỗi dòng thứ 100 */
+  background-color: red;
 }

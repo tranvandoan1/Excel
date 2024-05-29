@@ -1,0 +1,50 @@
+.dataFashion-main {
+    background-color: #fff;
+    height: 100vh;
+    padding: 30px;
+}
+
+.dataFashion-main h2 {
+    margin: 0;
+    padding: 0;
+}
+
+.dataFashion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dataFashion-add-phone {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dataFashion-add {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.manipulation ,.modal-import-data{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.EyeOutlined,
+.DeleteOutlined {
+
+    font-size: 18px;
+}
+
+.EyeOutlined:hover {
+    box-shadow: 0 0 5px salmon;
+    border-radius: 100%;
+}
+
+.DeleteOutlined:hover {
+    box-shadow: 0 0 5px red;
+    border-radius: 100%;
+}
