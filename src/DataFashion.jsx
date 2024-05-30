@@ -178,7 +178,7 @@ const DataFashion = () => {
             }
             const data = { ...dataFashionind, data: JSON.stringify(dataCheck) }
             await dispatch(uploadDataDataFashionF({ data: data }))
-            setLoading(false)   
+            setLoading(false)
             message.success('Upload thành công')
         }
     }
@@ -190,7 +190,7 @@ const DataFashion = () => {
             message.warning('Chưa nhập gì !')
 
         } else {
-            // setLoading(true)
+            setLoading(true)
             const dataCheck = JSON.parse(dataFashionind?.data)
             for (let i = 0; i < dataCheck.length; i++) {
                 if (e.data.id == dataCheck[i].id) {
@@ -218,6 +218,19 @@ const DataFashion = () => {
         }
     }
 
+    const uploadStatus = async (e) => {
+        setLoading(true)
+        const dataCheck = JSON.parse(dataFashionind?.data)
+        for (let i = 0; i < dataCheck.length; i++) {
+            if (e.data.id == dataCheck[i].id) {
+                dataCheck[i].status = e.status
+            }
+        }
+        const data = { ...dataFashionind, data: JSON.stringify(dataCheck) }
+        await dispatch(uploadDataDataFashionF({ data: data }))
+        setLoading(false)
+        message.success('Upload thành công')
+    }
     return (
         <div className='dataFashion-main'>
             {
@@ -315,6 +328,7 @@ const DataFashion = () => {
                             btnComfim={(e) => btAt(e)}
                             btnComfimAdres={(e) => btnComfimAdres(e)}
                             btnComfimNote={(e) => btnComfimNote(e)}
+                            uploadStatus={(e) => uploadStatus(e)}
                         />
                         :
                         <Note dataFashion={JSON.parse(dataFashionind?.data)} />

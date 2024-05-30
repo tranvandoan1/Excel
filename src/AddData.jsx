@@ -1,15 +1,18 @@
-import { DeleteOutlined, EyeOutlined, MinusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EyeInvisibleOutlined, EyeOutlined, MinusOutlined } from '@ant-design/icons';
 import { Input, Table, message } from 'antd';
 import React, { useEffect, useState } from 'react'
 
 const AddData = ({
-    dataFashion, btnComfim, btnComfimAdres,btnComfimNote
+    dataFashion, btnComfim, btnComfimAdres, btnComfimNote, uploadStatus
 }) => {
 
     const deleteDate = (dataSelect) => {
         btnComfim(dataSelect)
     }
 
+    const editStatus = (dataSelect) => {
+        uploadStatus(dataSelect)
+    }
 
     const saveAddress = (e) => {
         if (String(e).length <= 0) {
@@ -47,10 +50,11 @@ const AddData = ({
             key: 'phone',
             render: (phone, data, index) => (
                 <div>
-                    <Input defaultValue={phone} />
+                    <Input  disabled={data.status} defaultValue={phone} />
                 </div>
             ),
-            width: '20%'
+            width: '20%',
+
         },
         {
             title: 'ĐỊA CHỈ',
@@ -58,7 +62,7 @@ const AddData = ({
             key: 'address',
             render: (address, data, index) => (
                 <div>
-                    <Input defaultValue={address} placeholder='Nhập địa chỉ ...' onBlur={(e) => saveAddress({ data: data, value: e.target.value })} />
+                    <Input disabled={data.status} defaultValue={address} placeholder='Nhập địa chỉ ...' onBlur={(e) => saveAddress({ data: data, value: e.target.value })} />
                 </div>
             ),
             width: '50%'
@@ -69,7 +73,7 @@ const AddData = ({
             key: 'note',
             render: (note, data, index) => (
                 <div>
-                    <Input defaultValue={note} placeholder='Nhập ghi chú ...' onBlur={(e) => saveNote({ data: data, value: e.target.value })} />
+                    <Input  disabled={data.status} defaultValue={note} placeholder='Nhập ghi chú ...' onBlur={(e) => saveNote({ data: data, value: e.target.value })} />
 
                 </div>
             ),
@@ -82,7 +86,13 @@ const AddData = ({
             render: (id, data, index) => (
                 <div className='manipulation'>
                     <div className='EyeOutlined'>
-                        <EyeOutlined style={{ cursor: "pointer" }} />
+                        {
+                            data.status == false ?
+                                <EyeOutlined style={{ cursor: "pointer" }} onClick={() => editStatus({ data: data, status: true })} />
+                                :
+                                <EyeInvisibleOutlined style={{ cursor: "pointer" }} onClick={() => editStatus({ data: data, status: false })} />
+
+                        }
 
                     </div>
                     <div className='DeleteOutlined'>
@@ -95,21 +105,22 @@ const AddData = ({
         },
     ];
 
-  const [tableParams, setTableParams] = useState({
-    pagination: {
-      current: 1,
-      pageSize: 10,
-    },
-  });
-  const handleTableChange = (pagination, filters, sorter) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
     });
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
 
-  
-  };
+
+    };
+
 
     return (
         <div>
@@ -123,6 +134,7 @@ const AddData = ({
                 // scroll={{ y: 450 }}
                 onChange={handleTableChange}
                 bordered
+                rowClassName={(record, index) => (record.status == true && "color")}
             />
         </div>
     )
